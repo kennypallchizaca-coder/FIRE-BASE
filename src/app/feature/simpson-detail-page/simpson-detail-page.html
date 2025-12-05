@@ -9,7 +9,7 @@
   <div class="card bg-base-100 shadow-xl p-6 max-w-4xl mx-auto">
     <figure>
       <img
-        [src]="`https://cdn.thesimpsonsapi.com/500${personaje()?.portrait_path}`"
+        [src]="buildImageUrl(personaje()?.portrait_path)"
         [alt]="personaje()?.name"
         class="w-48 rounded-lg"
       />

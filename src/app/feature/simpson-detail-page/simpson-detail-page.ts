@@ -16,6 +16,8 @@ export class SimpsonDetailPage {
   private route = inject(ActivatedRoute);
   private service = inject(SimpsonsService);
 
+  readonly placeholderImage = 'https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg';
+
   personaje = toSignal(
     this.route.paramMap.pipe(
       map(params => +params.get('id')!),
@@ -23,5 +25,12 @@ export class SimpsonDetailPage {
     ),
     { initialValue: null }
   );
-  
+
+  buildImageUrl(imagePath?: string | null): string {
+    if (!imagePath) return this.placeholderImage;
+    if (imagePath.startsWith('http')) return imagePath;
+
+    const normalizedPath = imagePath.startsWith('/') ? imagePath : `/${imagePath}`;
+    return `https://cdn.thesimpsonsapi.com/500${normalizedPath}`;
+  }
 }

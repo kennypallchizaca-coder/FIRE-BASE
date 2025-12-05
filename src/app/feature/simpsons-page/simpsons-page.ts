@@ -22,10 +22,12 @@ import { AuthService as AuthFB } from '../../core/services/firebase/auth';
 export class SimpsonsPage {
   private simpsonsService = inject(SimpsonsService);
   paginationService = inject(PaginationService);
-  
+
 
   private favoritesService = inject(FavoritesService);
   private authService = inject(AuthFB);
+
+  private readonly placeholderImage = 'https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg';
 
   // Triggers para acciones de favoritos
   private addFavoriteAction = signal<{ nombre: string; imagen: string } | null>(null);
@@ -172,7 +174,7 @@ export class SimpsonsPage {
    */
   addToFavorites(character: any) {
     const nombre = character.name || character.character;
-    const imagen = character.image || '';
+    const imagen = this.buildImageUrl(character.portrait_path || character.image);
 
     if (!nombre) {
       console.error('Nombre del personaje no encontrado');
@@ -232,6 +234,17 @@ export class SimpsonsPage {
    */
   isFavorite(characterName: string): boolean {
     return this.favorites().some(fav => fav.nombre === characterName);
+  }
+
+  buildImageUrl(imagePath?: string | null): string {
+    if (!imagePath) return this.placeholderImage;
+
+    if (imagePath.startsWith('http')) {
+      return imagePath;
+    }
+
+    const normalizedPath = imagePath.startsWith('/') ? imagePath : `/${imagePath}`;
+    return `https://cdn.thesimpsonsapi.com/500${normalizedPath}`;
   }
 }
 
