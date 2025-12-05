@@ -1,0 +1,220 @@
+<div class="drawer">
+  <input id="my-drawer-2" type="checkbox" class="drawer-toggle" />
+
+  <div class="drawer-content flex flex-col">
+    <div class="navbar bg-base-300 w-full">
+      <div class="flex-none lg:hidden">
+        <label for="my-drawer-2" aria-label="open sidebar" class="btn btn-square btn-ghost">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block h-6 w-6 stroke-current">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </label>
+      </div>
+
+      <div class="mx-2 flex-1">
+        <div class="flex justify-start">
+          <!-- Mostrar botón login si NO está autenticado -->
+          @if (!isAuthenticated()) {
+            <button
+                (click)="navigateToLogin()"
+                class="btn btn-primary"
+            >
+                🔐 Iniciar Sesión
+            </button>
+          }
+
+          <!-- Mostrar dropdown de usuario si está autenticado -->
+          @if (isAuthenticated() && currentUser()) {
+            <div class="dropdown dropdown-end">
+                <!-- Avatar con trigger -->
+                <label tabindex="0" class="btn btn-ghost btn-circle avatar">
+                    <div class="w-10 rounded-full bg-primary text-primary-content flex items-center justify-center">
+                        <span class="text-lg font-bold">
+                            {{ currentUser()?.email?.charAt(0)?.toUpperCase() || 'U' }}
+                        </span>
+                    </div>
+                </label>
+
+                <!-- Menú desplegable -->
+                <ul tabindex="0" class="mt-3 z-10 p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-56">
+                    <!-- Email del usuario -->
+                    <li class="menu-title">
+                        <span class="text-xs">{{ currentUser()?.email }}</span>
+                    </li>
+                    
+                    <div class="divider my-0"></div>
+                    
+                    <!-- Botón de logout -->
+                    <li>
+                        <button 
+                            (click)="logout()"
+                            [disabled]="loggingOut()"
+                            class="text-error hover:bg-error hover:text-error-content"
+                        >
+                            @if (loggingOut()) {
+                                <span class="loading loading-spinner loading-xs"></span>
+                                Cerrando sesión...
+                            } @else {
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                </svg>
+                                Cerrar Sesión
+                            }
+                        </button>
+                    </li>
+                </ul>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="hidden flex-none lg:block">
+        <ul class="menu menu-horizontal">
+          <li>
+            @if (isAuthenticated()) {
+            <a routerLink="/estilos" routerLinkActive="bg-primary text-primary-content">
+              🎨 Estilos
+            </a>
+            } @else {
+            <a class="btn-disabled opacity-50 cursor-not-allowed tooltip tooltip-bottom" data-tip="Inicia sesión para acceder">
+              🎨 Estilos
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+            </a>
+            }
+          </li>
+
+          @if (isAuthenticated()) {
+          <li>
+            <a routerLink="/simpsons" routerLinkActive="bg-primary text-primary-content">
+              Simpsons
+            </a>
+          </li>
+          }
+
+          @if (authService.hasRole('admin')) {
+          <li>
+            <a routerLink="/admin" routerLinkActive="bg-primary text-primary-content">
+              👑 Panel Admin
+            </a>
+          </li>
+          }
+
+          <li>
+            <a routerLink="/home" routerLinkActive="bg-primary text-primary-content"> Home </a>
+          </li>
+          
+          @if (isAuthenticated()) {
+             <li>
+                <button 
+                    (click)="logout()" 
+                    class="text-error hover:bg-error hover:text-error-content"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                    Cerrar Sesión
+                </button>
+             </li>
+          }
+        </ul>
+
+        <app-theme-switcher></app-theme-switcher>
+      </div>
+    </div>
+  </div>
+
+  <div class="drawer-side">
+    <label for="my-drawer-2" aria-label="close sidebar" class="drawer-overlay"></label>
+
+    <div class="flex flex-col justify-between h-full bg-base-200 w-80">
+      <ul class="menu bg-base-200 min-h-full w-80 p-4">
+        <li>
+          @if (isAuthenticated()) {
+          <a routerLink="/estilos" routerLinkActive="bg-primary text-primary-content"> Estilos </a>
+          } @else {
+          <a class="btn-disabled opacity-50 cursor-not-allowed"> Estilos 🔒 </a>
+          }
+        </li>
+
+        @if (isAuthenticated()) {
+        <li>
+          <a routerLink="/simpsons" routerLinkActive="bg-primary text-primary-content">
+            Simpsons
+          </a>
+        </li>
+        }
+
+        @if (authService.hasRole('admin')) {
+        <li>
+          <a routerLink="/admin" routerLinkActive="bg-primary text-primary-content">
+            👑 Panel Admin
+          </a>
+        </li>
+        }
+
+        <li>
+          <a routerLink="/home" routerLinkActive="bg-primary text-primary-content"> Home </a>
+        </li>
+      </ul>
+
+      <div class="mt-auto p-4 border-t border-base-300 space-y-3">
+        <!-- Información de usuario si está autenticado -->
+        @if (isAuthenticated() && currentUser()) {
+            <div class="flex items-center gap-3 p-3 bg-base-300 rounded-lg">
+                <div class="avatar placeholder">
+                    <div class="bg-primary text-primary-content w-10 rounded-full">
+                        <span class="text-sm font-bold">
+                            {{ currentUser()?.email?.charAt(0)?.toUpperCase() || 'U' }}
+                        </span>
+                    </div>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium truncate">
+                        {{ currentUser()?.email }}
+                    </p>
+                </div>
+            </div>
+
+            <!-- Botón de logout -->
+            <button
+                (click)="logout()"
+                [disabled]="loggingOut()"
+                class="btn btn-error btn-sm w-full"
+            >
+                @if (loggingOut()) {
+                    <span class="loading loading-spinner loading-xs"></span>
+                    Cerrando sesión...
+                } @else {
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                    Cerrar Sesión
+                }
+            </button>
+        }
+
+        <!-- Theme Switcher -->
+        <app-theme-switcher></app-theme-switcher>
+        
+        <!-- Modal de confirmación de logout -->
+        <dialog id="logout_modal" class="modal">
+          <div class="modal-box">
+            <h3 class="font-bold text-lg">Cerrar Sesión</h3>
+            <p class="py-4">¿Estás seguro de que deseas cerrar sesión?</p>
+            <div class="modal-action">
+              <form method="dialog">
+                <button class="btn btn-ghost">Cancelar</button>
+              </form>
+              <button class="btn btn-error" (click)="confirmLogout()">Sí, cerrar sesión</button>
+            </div>
+          </div>
+          <form method="dialog" class="modal-backdrop">
+            <button>close</button>
+          </form>
+        </dialog>
+      </div>
+    </div>
+  </div>
+</div>

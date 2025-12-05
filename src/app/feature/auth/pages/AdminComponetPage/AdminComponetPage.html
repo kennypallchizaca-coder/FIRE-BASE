@@ -1,0 +1,107 @@
+<div class="p-8 min-h-screen bg-base-200">
+    <div class="max-w-6xl mx-auto">
+        
+        <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+            <div>
+                <h1 class="text-3xl font-bold text-primary flex items-center gap-2">
+                    🛡️ Panel de Administración
+                </h1>
+                <p class="text-base-content/70 mt-1">Gestiona los permisos y roles de los usuarios</p>
+            </div>
+            
+            <div class="stats shadow bg-base-100">
+                <div class="stat">
+                    <div class="stat-title">Total Usuarios</div>
+                    <div class="stat-value text-secondary">{{ usersResource.value()?.length || 0 }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card bg-base-100 shadow-xl overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="table table-zebra w-full">
+                    <thead class="bg-base-300">
+                        <tr>
+                            <th>Usuario</th>
+                            <th>Rol Actual</th>
+                            <th class="hidden md:table-cell">ID de Sistema</th>
+                            <th class="text-right">Acciones</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @if (usersResource.isLoading()) {
+                            <tr>
+                                <td colspan="4" class="text-center py-8">
+                                    <span class="loading loading-spinner loading-lg text-primary"></span>
+                                    <p class="mt-2 text-sm opacity-50">Cargando usuarios...</p>
+                                </td>
+                            </tr>
+                        }
+
+                        @for (user of usersResource.value(); track user.uid) {
+                            <tr class="hover">
+                                <td>
+                                    <div class="flex items-center gap-3">
+                                        <div class="avatar placeholder">
+                                            <div class="bg-neutral text-neutral-content rounded-full w-10">
+                                                <span>{{ user.email.charAt(0).toUpperCase() }}</span>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div class="font-bold">
+                                                {{ user.email }}
+                                                @if (user.uid === authService.currentUser()?.uid) {
+                                                    <span class="badge badge-xs badge-info ml-2">Tú</span>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div class="badge badge-primary gap-2 font-bold" *ngIf="user.role === 'admin'">
+                                        👑 ADMIN
+                                    </div>
+
+                                    <div class="badge badge-ghost gap-2" *ngIf="user.role === 'user'">
+                                        👤 Usuario
+                                    </div>
+                                </td>
+
+                                <td class="hidden md:table-cell font-mono text-xs opacity-50">
+                                    {{ user.uid }}
+                                </td>
+
+                                <td class="text-right">
+                                    @if (user.uid !== authService.currentUser()?.uid) {
+
+                                        @if (user.role === 'user') {
+                                            <button 
+                                                class="btn btn-sm btn-success text-white" 
+                                                (click)="toggleRole(user)"
+                                            >
+                                                ⬆️ Ascender
+                                            </button>
+                                        } @else {
+                                            <button 
+                                                class="btn btn-sm btn-error btn-outline" 
+                                                (click)="toggleRole(user)"
+                                            >
+                                                ⬇️ Degradar
+                                            </button>
+                                        }
+
+                                    } @else {
+                                        <span class="text-xs text-base-content/40 italic pr-2">No editable</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

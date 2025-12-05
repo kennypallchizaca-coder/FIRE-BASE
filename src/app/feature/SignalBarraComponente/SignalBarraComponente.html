@@ -1,0 +1,26 @@
+<section class="flex flex-col items-center justify-center p-6 gap-4">
+
+  <h3 class="text-lg font-semibold mt-6">Barra de progreso interactiva</h3>
+
+  <input
+    type="range"
+    min="0"
+    max="100"
+    class="w-64 accent-blue-600"
+    (input)="cambiarProgreso($event)"
+  >
+
+  <div class="w-64 h-4 bg-gray-300 rounded-full overflow-hidden">
+    <div
+      class="h-full transition-all duration-300"
+      [style.width.%]="progreso()"
+      [class]="{
+        'bg-red-500': progreso() <= 20,
+        'bg-yellow-500': progreso() > 20 && progreso() <= 69,
+        'bg-green-500': progreso() > 69
+      }"
+    ></div>
+  </div>
+
+  <p class="font-medium">Progreso: {{ progreso() }}%</p>
+</section>

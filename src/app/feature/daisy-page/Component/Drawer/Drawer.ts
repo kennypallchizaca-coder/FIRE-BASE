@@ -1,0 +1,74 @@
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { Router, RouterLink, RouterLinkActive } from "@angular/router";
+import { ThemeSwitcher } from "../../../share/componet/theme-switcher/theme-switcher";
+import { AuthService } from '../../../../core/services/firebase/auth';
+import { ToastrService } from 'ngx-toastr';
+
+@Component({
+  selector: 'app-drawer',
+  imports: [RouterLink, RouterLinkActive, ThemeSwitcher],
+  templateUrl: './Drawer.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class Drawer {
+   authService = inject(AuthService);
+private router = inject(Router);
+private toastr = inject(ToastrService);
+
+ // Signal que se actualiza automáticamente cuando cambia el usuario
+
+currentUser = this.authService.currentUser; 
+
+  /**
+   * Navega a la página de login
+   */
+  navigateToLogin() {
+    this.router.navigate(['/login']);
+  }
+
+  /**
+   * Verifica si el usuario está autenticado
+   */
+  isAuthenticated(): boolean {
+    return this.authService.isAuthenticated();
+  }
+
+
+confirmLogout() {
+    const modal = document.getElementById('logout_modal') as HTMLDialogElement;
+    modal?.close();
+    
+    this.loggingOut.set(true);
+    
+    this.authService.logout().subscribe({
+      next: () => {
+        this.loggingOut.set(false);
+        this.toastr.success('Sesión cerrada correctamente', 'Hasta pronto!');
+        this.router.navigate(['/login']);
+      },
+      error: (error) => {
+        this.loggingOut.set(false);
+        console.error('Error al cerrar sesión:', error);
+        this.toastr.error('No se pudo cerrar la sesión', 'Error');
+      }
+    });
+  }
+
+
+  loggingOut = signal(false); // Agregar
+  /**
+   * Cierra la sesión del usuario
+   */
+
+
+  openLogoutModal() {
+  const modal = document.getElementById('logout_modal') as HTMLDialogElement;
+  modal?.showModal();
+}
+
+
+// Cambiar logout() para usar el modal
+logout() {
+  this.openLogoutModal();
+}
+}
